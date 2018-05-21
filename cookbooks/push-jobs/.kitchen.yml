@@ -1,0 +1,53 @@
+driver:
+  name: vagrant
+
+provisioner:
+  name: chef_zero
+  deprecations_as_errors: true
+
+verifier:
+  name: inspec
+
+platforms:
+  - name: amazonlinux
+    driver_config:
+      box: mvbcoding/awslinux
+  - name: centos-6
+  - name: centos-7
+  - name: debian-7
+  - name: debian-8
+  - name: debian-9
+  - name: opensuse-leap-42
+  - name: ubuntu-14.04
+  - name: ubuntu-16.04
+  #
+  # The following (private) boxes are shared via Atlas. Please note this
+  # requires adding your Atlas account to the `Chef` org and will
+  # require a `vagrant login`.
+  #
+  # The Mac OS X boxes are VMware only also. Windows boxes support VMWare
+  # and VirtualBox only.
+  #
+  - name: windows-2012r2
+    driver:
+      box: chef/windows-server-2012r2-standard # private
+
+suites:
+  - name: default
+    run_list: recipe[test::default]
+    excludes: windows-2012r2
+    attributes:
+      push_jobs:
+        package_version: 2.4.5
+  - name: package_resource
+    run_list: recipe[test::package_resource]
+    excludes: windows-2012r2
+  - name: windows
+    run_list: recipe[push-jobs]
+    attributes:
+      push_jobs:
+        package_version: 2.4.5
+    includes: windows-2012r2
+  - name: resource
+    run_list: recipe[test::instance]
+    excludes: windows-2012r2
